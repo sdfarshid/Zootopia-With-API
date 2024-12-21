@@ -15,8 +15,7 @@ def process_fetching_data_from_API(animal_name):
     if response.status_code == requests.codes.ok:
         result_data = response.json()
         if len(result_data) <= 0:
-            print(f"<h2>The animal {animal_name} doesn't exist.</h2>")
-            return False
+            raise ValueError(f"<h2>The animal {animal_name} doesn't exist.</h2>")
         else:
             return response.text
     else:

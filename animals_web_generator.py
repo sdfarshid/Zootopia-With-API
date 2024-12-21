@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from typing import Union
 
 import Api
 
@@ -8,10 +9,14 @@ BASE_SOURCE_FILE = 'Storage/animals_data.json'
 BASE_ANIMAL = 'Fox'
 
 
-def load_data(file_path):
+def load_data(file_path: str):
     """ Loads a JSON file """
     with open(file_path, "r") as handle:
         return json.load(handle)
+
+
+def get_file_path(animal_name: str) -> str:
+    return f"Storage/{animal_name.lower()}_data.json"
 
 
 def read_html_file(file_path: str) -> str:
@@ -27,6 +32,10 @@ def write_file(file_path: str, content: str) -> None:
     file = open(file_path, "w")
     content = file.write(content)
     file.close()
+
+
+def is_file_exist(file_path: str) -> bool:
+    return os.path.exists(file_path)
 
 
 def fetch_data(animals_datas: list[dict]) -> list[dict]:
@@ -79,40 +88,53 @@ def get_skin_types(animals_datas: list[dict]) -> set:
     return skin_types
 
 
-def show_available_skins() -> None:
-    skin_types = get_skin_types(load_data(BASE_SOURCE_FILE))
+def show_available_skins(source_file=BASE_SOURCE_FILE) -> None:
+    skin_types = get_skin_types(load_data(source_file))
     print("Available skin types:")
     for skin_type in skin_types:
         print(f"- {skin_type}")
 
 
-def get_final_animal_data() -> list[dict]:
-    return fetch_data(load_data(BASE_SOURCE_FILE))
+def get_final_animal_data(source_file=BASE_SOURCE_FILE) -> list[dict]:
+    return fetch_data(load_data(source_file))
 
 
-def is_file_exist(file_path =BASE_SOURCE_FILE):
-    return  os.path.isfile(file_path)
+def create_source_data(animal_name: str):
+    """Fetches data for an animal, asking the user whether to overwrite existing data."""
+    file_path = get_file_path(animal_name)
+
+    if is_file_exist(file_path):
+        print(f"Data for {animal_name} already exists.")
+        user_choice = input("Do you want to fetch new data from the API? (yes/no): ").strip().lower()
+        if user_choice == "no":
+            print(f"Using existing data for {animal_name}.")
+            return True
+
+    print(f"Fetching data for {animal_name} from API...")
+    response_data = Api.process_fetching_data_from_API(animal_name)
+    if response_data:
+        write_file(file_path, response_data)
+        print(f"New data for {animal_name} has been saved.")
+    else:
+        raise Exception(f"Failed to fetch data for {animal_name} from API.")
 
 
-def create_source_data():
-
-    while not is_file_exist():
-        response_data = Api.process_fetching_data_from_API(BASE_ANIMAL)
-        if response_data:
-            write_file(BASE_SOURCE_FILE, response_data)
-            break
-        else:
-            print("Waiting for data from API...")
-            time.sleep(5)
+def prepare_data_process(animal_name: str) -> str:
+    create_source_data(animal_name)
+    file_path = get_file_path(animal_name)
+    animals_data = get_final_animal_data(file_path)
+    return generate_string_output(animals_data)
 
 
-def create_animals_page():
-    create_source_data()
-    animals_data = get_final_animal_data()
-    dynamic_data = generate_string_output(animals_data)
+
+def create_animals_page(animal_name: str):
+    dynamic_data = prepare_data_process(animal_name)
+
     static_file = read_html_file("views/animals_template.html")
     new_html_content = set_dynamic_data(static_file, dynamic_data)
+
     write_file("views/animals.html", new_html_content)
+    print("Website was successfully generated to the file animals.html.")
 
 
 def run_create_filtered_animals_page():
@@ -141,8 +163,11 @@ def filter_animals(animals_data: list[dict], key: str, value: str) -> list[dict]
 
 
 def main():
-
-     create_animals_page()
+    try:
+        animal_name = input("Enter a name of an animal: ")
+        create_animals_page(animal_name)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":
