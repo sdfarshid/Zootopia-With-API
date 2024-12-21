@@ -120,11 +120,13 @@ def create_source_data(animal_name: str):
 
 
 def prepare_data_process(animal_name: str) -> str:
-    create_source_data(animal_name)
-    file_path = get_file_path(animal_name)
-    animals_data = get_final_animal_data(file_path)
-    return generate_string_output(animals_data)
-
+    try:
+        create_source_data(animal_name)
+        file_path = get_file_path(animal_name)
+        animals_data = get_final_animal_data(file_path)
+        return generate_string_output(animals_data)
+    except ValueError as message:
+        return str(message)
 
 
 def create_animals_page(animal_name: str):
