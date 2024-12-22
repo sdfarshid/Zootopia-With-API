@@ -1,10 +1,20 @@
 import data_fetcher
+import os
+
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+template_PATH = os.getenv('Template_PATH')
+
+
 
 
 def create_animals_page(animal_name: str):
     dynamic_data = data_fetcher.prepare_data_process(animal_name)
 
-    static_file = data_fetcher.read_html_file("views/animals_template.html")
+    static_file = data_fetcher.read_html_file(template_PATH)
     new_html_content = set_dynamic_data(static_file, dynamic_data)
 
     data_fetcher.write_file("views/animals.html", new_html_content)

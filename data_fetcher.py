@@ -1,9 +1,10 @@
 import json
 import os
-
 import Api
 
-BASE_SOURCE_FILE = 'Storage/animals_data.json'
+from dotenv import load_dotenv
+load_dotenv()
+BASE_SOURCE_FILE = os.getenv('BASE_SOURCE_FILE')
 
 
 def prepare_data_process(animal_name: str) -> str:

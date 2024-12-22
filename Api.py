@@ -1,11 +1,14 @@
+import os
 import requests
 
-BASE_API_URL = 'https://api.api-ninjas.com/v1/animals'
-FILE_NAME = "Storage/animals.html"
+from dotenv import load_dotenv
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
 
 
 def call_api(name):
-    headers = {'X-Api-Key': 's7LNBmnmKxRcVVABhsUUkw==IYip6yjz9nBzLN9s'}
+    headers = {f'X-Api-Key': f's7LNBmnmKxRcVVABhsUUkw=={API_KEY}'}
     api_url = f'https://api.api-ninjas.com/v1/animals?name={name}'
     return requests.get(api_url, headers)
 

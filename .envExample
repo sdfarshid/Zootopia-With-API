@@ -1,0 +1,3 @@
+API_KEY =
+Template_PATH = "views/animals_template.html"
+BASE_SOURCE_FILE = "Storage/animals_data.json"
