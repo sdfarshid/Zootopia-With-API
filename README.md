@@ -24,20 +24,13 @@ Before running this project, ensure you have the following installed on your sys
    cd <repository-folder>
    ```
 
-2. Create and activate a virtual environment:
-
-   ```bash
-   python3 -m venv my_env
-   source my_env/bin/activate
-   ```
-
-3. Install the required dependencies:
+2. Install the required dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file in the project root and set the following environment variables:
+3. Create a `.env` file in the project root and set the following environment variables:
 
    ```env
    API_KEY=your_api_key_here
