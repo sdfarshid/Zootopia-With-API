@@ -8,9 +8,8 @@ API_KEY = os.getenv('API_KEY')
 
 
 def call_api(name):
-    headers = {'X-Api-Key': API_KEY}
-    api_url = f'https://api.api-ninjas.com/v1/animals?name={name}'
-    return requests.get(api_url, headers=headers)
+    api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
+    return requests.get(api_url, headers={'X-Api-Key': API_KEY})
 
 
 
